@@ -99,7 +99,7 @@ should be able to just run a few commands to get set up:
 git clone https://github.com/kentcdodds/testing-workshop.git
 cd testing-workshop
   for fixing `sh: concurrently: command not found` error when npm run setup : npm i -D concurrently --legacy-peer-deps
-  important : email adress fill required
+  important : email adress fill required (m720694@outlook.com)
 npm run setup --silent
 ```
 
