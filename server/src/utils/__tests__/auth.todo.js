@@ -1,5 +1,23 @@
 import {isPasswordAllowed, userToJSON} from '../auth'
 
+describe('isPasswordAllowed', () => {
+  // equivalent of 'isPasswordAllowed only allows some passwords' below
+  const allowedPasswords = ['sfkl.e904f.s']
+  const disallowedPasswords = ['', 'ffffffff', '88888888']
+
+  allowedPasswords.forEach(pwd => {
+    it(`'${pwd}' should be allowed`, () => {
+      expect(isPasswordAllowed(pwd)).toBe(true)
+    })
+  })
+
+  disallowedPasswords.forEach(pwd => {
+    it(`'${pwd}' should not be allowed`, () => {
+      expect(isPasswordAllowed(pwd)).toBe(false)
+    })
+  })
+})
+
 test('isPasswordAllowed only allows some passwords', () => {
   expect(isPasswordAllowed('')).toBe(false)
   expect(isPasswordAllowed('ffffffff')).toBe(false)
@@ -22,7 +40,7 @@ test('userToJSON excludes secure properties', () => {
 
   const jsonUser = userToJSON(user)
   expect(jsonUser).toEqual(safeUser)
-  console.log(jsonUser)
+  // console.log(jsonUser)
 })
 
 //////// Elaboration & Feedback /////////
