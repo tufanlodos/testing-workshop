@@ -4,18 +4,25 @@ import * as utils from '../utils'
 
 // add an inline mock with the jest.mock API
 //
-// jest.mock(
-//   relativePathToModuleToMock,
-//   functionThatReturnsMockObject
-// )
+jest.mock(
+  '../utils',
+  () => {
+    const actualUtils = require.requireActual('../utils')
+    return {
+      ...actualUtils,
+      getWinner: jest.fn((p1, p2) => p2) //sadece override edilen mocklansın kalanı aynı
+    }
+  }
+)
 //
 // (Hint #1)
 
-test('returns winner', () => {
-  // remove the next two lines
-  jest.spyOn(utils, 'getWinner')
-  utils.getWinner.mockImplementation((p1, p2) => p2)
+beforeEach(()=>{ //her bir suitten önce
+  utils.getWinner.mockClear()
+  //bunun yerine her bir test suitinin içinde ilk iş olarak bu metodu çağırmak da olabilirdi ya da suitlerden bir tanesine test.skip( olarak başlamak.
+})
 
+test('returns winner', () => {
   const winner = thumbWar('Ken Wheeler', 'Kent C. Dodds')
   expect(winner).toBe('Kent C. Dodds')
   expect(utils.getWinner).toHaveBeenCalledTimes(2)
@@ -23,8 +30,16 @@ test('returns winner', () => {
     expect(args).toEqual(['Ken Wheeler', 'Kent C. Dodds'])
   })
 
-  // remove the next line
-  utils.getWinner.mockRestore()
+})
+
+test('returns winner', () => {
+  const winner = thumbWar('Ken Wheeler', 'Kent C. Dodds')
+  expect(winner).toBe('Kent C. Dodds')
+  expect(utils.getWinner).toHaveBeenCalledTimes(2)
+  utils.getWinner.mock.calls.forEach(args => {
+    expect(args).toEqual(['Ken Wheeler', 'Kent C. Dodds'])
+  })
+
 })
 
 /*
