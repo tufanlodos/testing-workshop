@@ -1,6 +1,6 @@
 import {omit} from 'lodash'
 import {initDb, generate} from 'til-server-test-utils'
-import * as usersController from '../users.bug.todo'
+import * as usersController from '../users.todo'
 import db from '../../utils/db'
 
 // this setup is common across controllers, so it may be useful to
@@ -70,49 +70,45 @@ test('updateUser updates the user with the given changes', async () => {
   expect(userFromDb).toEqual(updatedUser)
 })
 
-test('deleteUser deletes a user', async () => {
-  const testUser = await db.insertUser(generate.userData())
-  const {req, res} = setup()
-  req.user = {id: testUser.id}
-  req.params = {id: testUser.id}
+// test('deleteUser deletes a user', async () => {
+//   const testUser = await db.insertUser(generate.userData())
+//   const {req, res} = setup()
+//   req.user = {id: testUser.id}
+//   req.params = {id: testUser.id}
 
-  await usersController.deleteUser(req, res)
+//   await usersController.deleteUser(req, res)
 
-  expect(res.json).toHaveBeenCalledTimes(1)
-  const firstCall = res.json.mock.calls[0]
-  const firstArg = firstCall[0]
-  const {user} = firstArg
-  expect(user).toEqual(safeUser(testUser))
-  const userFromDb = await db.getPost(user.id)
-  expect(userFromDb).not.toBeDefined()
-})
+//   expect(res.json).toHaveBeenCalledTimes(1)
+//   const firstCall = res.json.mock.calls[0]
+//   const firstArg = firstCall[0]
+//   const {user} = firstArg
+//   expect(user).toEqual(safeUser(testUser))
+//   const userFromDb = await db.getPost(user.id)
+//   expect(userFromDb).not.toBeDefined()
+// })
 
 test('deleteUser will 404 if made to a non-existing user', async () => {
   const {req, res} = setup()
-  const nonExistantId = generate.id()
-  req.params = {id: nonExistantId}
-  req.user = {id: nonExistantId}
+  req.params = {id: generate.id()}
+  req.user = {id: generate.id()}
   await usersController.deleteUser(req, res)
 
-  expect(res.json).not.toHaveBeenCalled()
   expect(res.status).toHaveBeenCalledTimes(1)
   expect(res.status).toHaveBeenCalledWith(404)
   expect(res.send).toHaveBeenCalledTimes(1)
 })
 
 test('deleteUser will 403 if not made by the author', async () => {
-  const testUser = await db.insertPost(generate.userData())
   const {req, res} = setup()
+  const testUser = await db.insertUser(generate.userData())
   req.params = {id: testUser.id}
-
+  req.user = {id:generate.id()}
   await usersController.deleteUser(req, res)
 
   expect(res.json).not.toHaveBeenCalled()
   expect(res.status).toHaveBeenCalledTimes(1)
   expect(res.status).toHaveBeenCalledWith(403)
   expect(res.send).toHaveBeenCalledTimes(1)
-  const userFromDb = await db.getPost(testUser.id)
-  expect(userFromDb).toEqual(testUser)
 })
 
 // Here's where you'll add your bug-fixing test! 🐛

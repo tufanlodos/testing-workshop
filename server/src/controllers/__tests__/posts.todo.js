@@ -1,7 +1,7 @@
-// import * as postsController from '../posts.todo'
-// import db from '../../utils/db'
 // eslint-disable-next-line no-unused-vars
 import {initDb, generate} from 'til-server-test-utils'
+import * as postsController from '../posts.todo'
+import db from '../../utils/db'
 
 // I'll give this one to you. You want the database to be fresh
 // the initDb function will initialize the database with random users and posts
@@ -10,6 +10,12 @@ import {initDb, generate} from 'til-server-test-utils'
 beforeEach(() => initDb())
 
 test('getPosts returns all posts in the database', async () => {
+  const req = {}
+  const res = {json:jest.fn()}
+  await postsController.getPosts(req,res)
+  expect(res.json).toHaveBeenCalledTimes(1)
+  const allPosts = await db.getPosts()
+  expect(res.json).toHaveBeenCalledWith({posts:allPosts})
   // here you'll need to Arrange, Act, and Assert
   // Arrange: set up the req and res mock objects
   // Act: Call getPosts on the postsController with the req and res
